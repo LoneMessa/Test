@@ -1,1 +1,92 @@
-index.html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестовый Чат</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .message.user {
+            background-color: #d1e7dd;
+            text-align: right;
+        }
+        .message.other {
+            background-color: #f8d7da;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2>Тестовый Чат</h2>
+    <div class="messages" id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Введите ваше сообщение..." />
+</div>
+
+<script>
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+
+    // Функция для добавления сообщения в чат
+    function addMessage(text, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message ' + (isUser ? 'user' : 'other');
+        messageDiv.textContent = text;
+
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокрутка вниз
+    }
+
+    // Обработка ввода сообщения
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter' && messageInput.value.trim() !== '') {
+            const messageText = messageInput.value.trim();
+            
+            // Добавляем сообщение пользователя
+            addMessage(messageText, true);
+            
+            // Очищаем поле ввода
+            messageInput.value = '';
+
+            // Здесь можно добавить логику для обработки ответов от других пользователей или бота
+            setTimeout(() => {
+                addMessage("Ответ от другого пользователя", false); // Пример ответа
+            }, 1000); // Задержка в 1 секунду для имитации ответа
+        }
+    });
+</script>
+
+</body>
+</html>
