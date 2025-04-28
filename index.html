@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестовый Чат</title>
+    <title>Чат</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,19 +45,30 @@
             border-radius: 5px;
             border: 1px solid #ccc;
         }
+        button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <h2>Тестовый Чат</h2>
+    <h2>Чат</h2>
     <div class="messages" id="messages"></div>
     <input type="text" id="messageInput" placeholder="Введите ваше сообщение..." />
+    <button id="sendButton">Отправить</button>
 </div>
 
 <script>
     const messagesDiv = document.getElementById('messages');
     const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+
+    const socket = new WebSocket('ws://localhost:8080');
 
     // Функция для добавления сообщения в чат
     function addMessage(text, isUser) {
@@ -69,23 +80,34 @@
         messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокрутка вниз
     }
 
-    // Обработка ввода сообщения
-    messageInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter' && messageInput.value.trim() !== '') {
+    // Обработка входящих сообщений от сервера
+    socket.addEventListener('message', function(event) {
+        addMessage(event.data, false); // Сообщение от другого пользователя
+    });
+
+    // Обработка ввода сообщения и нажатия кнопки "Отправить"
+    sendButton.addEventListener('click', function() {
+        if (messageInput.value.trim() !== '') {
             const messageText = messageInput.value.trim();
             
-            // Добавляем сообщение пользователя
+            // Отправляем сообщение на сервер
+            socket.send(messageText);
+            
+            // Добавляем сообщение пользователя в чат
             addMessage(messageText, true);
             
             // Очищаем поле ввода
             messageInput.value = '';
-
-            // Здесь можно добавить логику для обработки ответов от других пользователей или бота
-            setTimeout(() => {
-                addMessage("Ответ от другого пользователя", false); // Пример ответа
-            }, 1000); // Задержка в 1 секунду для имитации ответа
         }
     });
+
+    // Обработка нажатия клавиши "Enter"
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+           sendButton.click(); // Вызываем клик по кнопке "Отправить"
+           event.preventDefault(); // Предотвращаем отправку формы (если есть)
+       }
+   });
 </script>
 
 </body>
